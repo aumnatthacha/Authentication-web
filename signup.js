@@ -1,5 +1,4 @@
 // signup.js
-
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
@@ -38,7 +37,6 @@ router.get('/admin/data', (req, res) => {
     }
   });
 });
-
 
 // Create a route to handle the signup POST request
 router.post('/signup', (req, res) => {
