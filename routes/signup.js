@@ -1,8 +1,7 @@
-// signup.js
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-
+const path = require('path'); // Add path module for handling file paths
 
 const con = mysql.createConnection({
   host: "localhost",
@@ -18,10 +17,9 @@ con.connect((err) => {
 
 // Create a route to display the signup form
 router.get('/signup', (req, res) => {
-  res.sendFile(__dirname + '/views/signup.html');
+  // Use path.join to create the correct file path
+  res.sendFile(path.join(__dirname, '../views/signup.html'));
 });
-
-// 
 
 // Create a route to retrieve all user data as JSON
 router.get('/admin/data', (req, res) => {
@@ -46,14 +44,13 @@ router.post('/signup', (req, res) => {
 
   const sql = "INSERT INTO users (username, password, authorities) VALUES (?, ?, ?)";
 
-  con.query(sql, [username, password,authorities], (err, result) => {
+  con.query(sql, [username, password, authorities], (err, result) => {
     if (err) {
       console.error("Error inserting data: " + err.message);
       res.send("Error occurred while signing up. Please try again.");
     } else {
       console.log("Signup Complete");
-      // res.send("Signup Successful!");
-      res.sendFile(__dirname + '/views/signup_success.html');
+      res.sendFile(path.join(__dirname, '../views/signup_success.html'));
     }
   });
 });

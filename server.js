@@ -7,8 +7,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'views')));
 
-const loginRouter = require('./login');
-const signupRouter = require('./signup');
+const loginRouter = require('./routes/login');
+const signupRouter = require('./routes/signup');
 
 app.use('/', loginRouter);
 app.use('/', signupRouter);
