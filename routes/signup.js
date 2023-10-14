@@ -1,58 +1,67 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
-const path = require('path'); // Add path module for handling file paths
+const path = require('path');
 
-const con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "mydb"
-});
+class UserController {
+  constructor() {
+    this.con = mysql.createConnection({
+      host: "localhost",
+      user: "root",
+      password: "",
+      database: "mydb"
+    });
 
-con.connect((err) => {
-  if (err) throw err;
-  console.log("Connected to MySQL database");
-});
+    this.con.connect((err) => {
+      if (err) throw err;
+      console.log("Connected to MySQL database");
+    });
+  }
 
-// Create a route to display the signup form
-router.get('/signup', (req, res) => {
-  // Use path.join to create the correct file path
-  res.sendFile(path.join(__dirname, '../views/signup.html'));
-});
+  // Display the signup form
+  showSignupForm(req, res) {
+    res.sendFile(path.join(__dirname, '../views/signup.html'));
+  }
 
-// Create a route to retrieve all user data as JSON
-router.get('/admin/data', (req, res) => {
-  const sql = "SELECT username, authorities, password FROM users";
+  // Handle the signup POST request
+  signup(req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+    const authorities = req.body.authorities;
 
-  con.query(sql, (err, result) => {
-    if (err) {
-      console.error("Error retrieving data: " + err.message);
-      res.status(500).json({ error: "Error occurred while retrieving data." });
-    } else {
-      console.log("Data retrieved successfully");
-      res.json(result);
-    }
-  });
-});
+    const sql = "INSERT INTO users (username, password, authorities) VALUES (?, ?, ?)";
 
-// Create a route to handle the signup POST request
-router.post('/signup', (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  const authorities = req.body.authorities;
+    this.con.query(sql, [username, password, authorities], (err, result) => {
+      if (err) {
+        console.error("Error inserting data: " + err.message);
+        res.send("Error occurred while signing up. Please try again.");
+      } else {
+        console.log("Signup Complete");
+        res.sendFile(path.join(__dirname, '../views/signup_success.html'));
+      }
+    });
+  }
 
-  const sql = "INSERT INTO users (username, password, authorities) VALUES (?, ?, ?)";
+  // Retrieve all user data as JSON
+  getAllUserData(req, res) {
+    const sql = "SELECT username, authorities, password FROM users";
 
-  con.query(sql, [username, password, authorities], (err, result) => {
-    if (err) {
-      console.error("Error inserting data: " + err.message);
-      res.send("Error occurred while signing up. Please try again.");
-    } else {
-      console.log("Signup Complete");
-      res.sendFile(path.join(__dirname, '../views/signup_success.html'));
-    }
-  });
-});
+    this.con.query(sql, (err, result) => {
+      if (err) {
+        console.error("Error retrieving data: " + err.message);
+        res.status(500).json({ error: "Error occurred while retrieving data." });
+      } else {
+        console.log("Data retrieved successfully");
+        res.json(result);
+      }
+    });
+  }
+}
+
+const userController = new UserController();
+
+router.get('/signup', (req, res) => userController.showSignupForm(req, res));
+router.post('/signup', (req, res) => userController.signup(req, res));
+router.get('/admin/data', (req, res) => userController.getAllUserData(req, res));
 
 module.exports = router;

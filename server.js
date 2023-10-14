@@ -2,17 +2,32 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path'); 
 
-const app = express();
+class App {
+  constructor() {
+    this.app = express();
+    this.configureMiddleware();
+    this.configureRoutes();
+  }
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'views')));
+  configureMiddleware() {
+    this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(express.static(path.join(__dirname, 'views')));
+  }
 
-const loginRouter = require('./routes/login');
-const signupRouter = require('./routes/signup');
+  configureRoutes() {
+    const loginRouter = require('./routes/login');
+    const signupRouter = require('./routes/signup');
 
-app.use('/', loginRouter);
-app.use('/', signupRouter);
+    this.app.use('/', loginRouter);
+    this.app.use('/', signupRouter);
+  }
 
-app.listen(3000, () => {
-  console.log('Server is running on port http://localhost:3000/signup');
-});
+  startServer(port) {
+    this.app.listen(port, () => {
+      console.log(`Server is running on port http://localhost:${port}/signup`);
+    });
+  }
+}
+
+const myApp = new App();
+myApp.startServer(3000);
