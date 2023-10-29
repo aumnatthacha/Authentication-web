@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path'); 
+const loginRouter = require('./routes/login'); // Import loginRouter
+const signupRouter = require('./routes/signup'); // Import signupRouter
 
 class App {
   constructor() {
@@ -15,11 +17,8 @@ class App {
   }
 
   configureRoutes() {
-    const loginRouter = require('./routes/login');
-    const signupRouter = require('./routes/signup');
-
-    this.app.use('/', loginRouter);
-    this.app.use('/', signupRouter);
+    this.app.use('/', loginRouter); 
+    this.app.use('/', signupRouter); 
   }
 
   startServer(port) {

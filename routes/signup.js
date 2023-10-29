@@ -3,6 +3,13 @@ const router = express.Router();
 const mysql = require('mysql');
 const path = require('path');
 
+// Factory Pattern: UserController Factory
+class UserControllerFactory {
+  createUserController() {
+    return new UserController();
+  }
+}
+
 class UserController {
   constructor() {
     this.con = mysql.createConnection({
@@ -58,7 +65,9 @@ class UserController {
   }
 }
 
-const userController = new UserController();
+// Create UserController using Factory
+const userControllerFactory = new UserControllerFactory();
+const userController = userControllerFactory.createUserController();
 
 router.get('/signup', (req, res) => userController.showSignupForm(req, res));
 router.post('/signup', (req, res) => userController.signup(req, res));

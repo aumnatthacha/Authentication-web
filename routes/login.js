@@ -1,22 +1,33 @@
 const express = require('express');
+const router = express.Router();
 const mysql = require('mysql');
 const session = require('express-session');
 const path = require('path');
 
-class AuthController {
+// Factory Pattern: Database Connection Factory
+class DatabaseConnectionFactory {
   constructor() {
-    this.router = express.Router();
-    this.con = mysql.createConnection({
+    this.connection = mysql.createConnection({
       host: "localhost",
       user: "root",
       password: "",
       database: "mydb"
     });
-
-    this.con.connect((err) => {
+    this.connection.connect((err) => {
       if (err) throw err;
       console.log("Connected to MySQL database");
     });
+  }
+
+  getConnection() {
+    return this.connection;
+  }
+}
+
+class AuthController {
+  constructor(databaseConnectionFactory) {
+    this.router = express.Router();
+    this.dbFactory = databaseConnectionFactory;
 
     this.router.use(session({
       secret: 'natthacha-secret-key', // Change this to a secure secret
@@ -28,8 +39,6 @@ class AuthController {
     this.router.post('/login', this.handleLogin.bind(this));
     this.router.get('/dashboard', this.isAuthenticated.bind(this), this.displayDashboard.bind(this));
     this.router.get('/logout', this.logout.bind(this));
-
-    return this.router;
   }
 
   isAuthenticated(req, res, next) {
@@ -48,8 +57,9 @@ class AuthController {
     const username = req.body.username;
     const password = req.body.password;
 
+    const connection = this.dbFactory.getConnection();
     const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-    this.con.query(sql, [username, password], (err, results) => {
+    connection.query(sql, [username, password], (err, results) => {
       if (err) {
         console.error("Error querying database: " + err.message);
         res.send("Error occurred while logging in. Please try again.");
@@ -88,6 +98,9 @@ class AuthController {
   }
 }
 
-const authController = new AuthController();
+// Singleton Pattern: Create a single instance of the Database Connection Factory
+const dbFactory = new DatabaseConnectionFactory();
 
-module.exports = authController;
+const authController = new AuthController(dbFactory);
+
+module.exports = authController.router;

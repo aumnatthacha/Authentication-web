@@ -18,21 +18,17 @@
             Signup Form
         </div>
         <form action="/signup" method="post">
-            <!-- เพิ่ม method="post" เพื่อระบุว่าข้อมูลจะถูกส่งไปยังเซิร์ฟเวอร์เมื่อกด Submit -->
             <div class="field">
                 <input type="text" id="username" name="username" placeholder="ชื่อผู้ใช้" required>
-                <!-- เพิ่ม name="username" เพื่อระบุชื่อของฟิลด์ข้อมูล -->
             </div>
             <div class="field">
                 <input type="password" id="password" name="password" placeholder="รหัสผ่าน" required>
-                <!-- เพิ่ม name="password" เพื่อระบุชื่อของฟิลด์ข้อมูล -->
             </div>
             <div class="field">
                 <label for="authorities"></label>
                 <select name="authorities" id="authorities" required class="select-box">
                     <option value="admin">ผู้ดูแลระบบ</option>
                     <option value="user">ผู้ใช้งานทั่วไป</option>
-                    <!-- <option value="guest">ผู้เยี่ยมชม</option>  -->
                 </select>
             </div>
             <div class="field">
