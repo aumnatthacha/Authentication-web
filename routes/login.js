@@ -4,7 +4,7 @@ const mysql = require('mysql');
 const session = require('express-session');
 const path = require('path');
 
-// Factory Pattern: Database Connection Factory
+// Factory Pattern: Database Connection Factoryxx
 class DatabaseConnectionFactory {
   constructor() {
     this.connection = mysql.createConnection({
